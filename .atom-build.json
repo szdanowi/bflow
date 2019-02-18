@@ -1,0 +1,14 @@
+{
+    "cmd": "cmake",
+    "name": "generate CMake",
+    "args": ["-S", ".", "-B", "build/"],
+    "cwd": "{PROJECT_PATH}",
+    "errorMatch": "(?<file>[\\/0-9a-zA-Z\\._]+):(?<line>\\d+):(?<col>\\d+):\\s+(?<message>.+)",
+    "targets": {
+        "build&run tests": {
+            "cmd": "cd build/ && make && ./unit_tests",
+            "cwd": "{PROJECT_PATH}",
+            "errorMatch": "(?<file>[\\/0-9a-zA-Z\\._]+):(?<line>\\d+):(?<col>\\d+):\\s+(?<message>.+)"
+        }
+    }
+}
