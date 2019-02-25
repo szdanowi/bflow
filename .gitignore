@@ -6,3 +6,4 @@
 *.includes
 build/
 cmake-build-debug/
+*.pch
