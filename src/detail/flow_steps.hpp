@@ -33,7 +33,7 @@ private:
 template <typename event_t>
 template <typename step_t>
 void steps<event_t>::push_front(step_t&& step) {
-  _front = create_step<event_t>(step, std::move(_front));
+  _front = create_step<event_t>(std::move(step), std::move(_front));
 }
 
 template <typename event_t>
