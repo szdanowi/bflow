@@ -13,7 +13,7 @@ struct AOneShotFlow : public ::testing::Test
   static constexpr auto twos_till_nine = [](int event) {
     return event == 9 ? bflow::result::completed : event == 2 ? bflow::result::accepted : bflow::result::rejected;
   };
-  bflow::one_shot<int> a_subflow = bflow::one_shot<int>::of(seven, nine);
+  bflow::one_shot<int> a_subflow_of_seven_and_nine = bflow::one_shot<int>::of(seven, nine);
 };
 
 TEST_F(AOneShotFlow, withNoStepsAcceptsNothing) {
@@ -88,7 +88,7 @@ TEST_F(AOneShotFlow, supportsInPlaceDefinedSubflows) {
 }
 
 TEST_F(AOneShotFlow, supportsSubflowsDefinedElsewhere) {
-  auto flow = bflow::one_shot<int>::of(nine, a_subflow, seven);
+  auto flow = bflow::one_shot<int>::of(nine, a_subflow_of_seven_and_nine, seven);
 
   ASSERT_EQ(bflow::result::accepted, flow.process(9));
   ASSERT_EQ(bflow::result::accepted, flow.process(7));
@@ -97,16 +97,15 @@ TEST_F(AOneShotFlow, supportsSubflowsDefinedElsewhere) {
   ASSERT_EQ(bflow::result::completed, flow.process(7));
 }
 
-// TEST_F(ALoopedFlow, supportsSubflowAlternatives) {
-//    bflow::looped<int> flow{bflow::AnyOf<int> {seven, nine}, nine};
-//
-//    ASSERT_EQ(bflow::result::accepted, flow.process(7));
-//    ASSERT_EQ(bflow::result::rejected, flow.process(7));
-//    ASSERT_EQ(bflow::result::completed, flow.process(9));
-//
-//    ASSERT_EQ(bflow::result::accepted, flow.process(9));
-//    ASSERT_EQ(bflow::result::rejected, flow.process(7));
-//    ASSERT_EQ(bflow::result::completed, flow.process(9));
-//}
-//
+TEST_F(ALoopedFlow, supportsSubflowAlternatives) {
+  auto flow = bflow::looped<int>::of(bflow::any<int>::of(seven, nine), nine);
+
+  ASSERT_EQ(bflow::result::accepted, flow.process(7));
+  ASSERT_EQ(bflow::result::rejected, flow.process(7));
+  ASSERT_EQ(bflow::result::completed, flow.process(9));
+
+  ASSERT_EQ(bflow::result::accepted, flow.process(9));
+  ASSERT_EQ(bflow::result::rejected, flow.process(7));
+  ASSERT_EQ(bflow::result::completed, flow.process(9));
+}
 

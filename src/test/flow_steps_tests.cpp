@@ -6,7 +6,7 @@ using namespace bflow::detail;
 
 TEST(InStepsWithNoElements, beginIsAnEnd) {
   auto s = make_steps<int>();
-  ASSERT_EQ(s.front(), s.end());
+  ASSERT_EQ(s.begin(), s.end());
 }
 
 TEST(AnEndOfSteps, convertsToFalse) {
@@ -27,20 +27,20 @@ struct InStepsWithSingleElement : public ::testing::Test
 };
 
 TEST_F(InStepsWithSingleElement, beginDoesNotEqualToEnd) {
-  ASSERT_NE(s.front(), s.end());
+  ASSERT_NE(s.begin(), s.end());
 }
 
 TEST_F(InStepsWithSingleElement, beginConvertsToTrue) {
-  ASSERT_TRUE(static_cast<bool>(s.front()));
+  ASSERT_TRUE(static_cast<bool>(s.begin()));
 }
 
 TEST_F(InStepsWithSingleElement, beginGivesAccessToFirstElement) {
-  ASSERT_EQ(s.front().process(7), element_1(7));
-  ASSERT_EQ(s.front().process(1), element_1(1));
+  ASSERT_EQ(s.begin().process(7), element_1(7));
+  ASSERT_EQ(s.begin().process(1), element_1(1));
 }
 
 TEST_F(InStepsWithSingleElement, nextToBeginIsEnd) {
-  ASSERT_EQ(s.front().next(), s.end());
+  ASSERT_EQ(s.begin().next(), s.end());
 }
 
 struct InStepsWithTwoElements : public InStepsWithSingleElement
@@ -52,26 +52,26 @@ struct InStepsWithTwoElements : public InStepsWithSingleElement
 };
 
 TEST_F(InStepsWithTwoElements, nextToBeginIsNotAnEnd) {
-  ASSERT_NE(s.front().next(), s.end());
+  ASSERT_NE(s.begin().next(), s.end());
 }
 
 TEST_F(InStepsWithTwoElements, nextToBeginGivesAccessToSecondElement) {
-  ASSERT_EQ(s.front().next().process(7), element_2(7));
-  ASSERT_EQ(s.front().next().process(1), element_2(1));
+  ASSERT_EQ(s.begin().next().process(7), element_2(7));
+  ASSERT_EQ(s.begin().next().process(1), element_2(1));
 }
 
 TEST_F(InStepsWithTwoElements, setpsMayBeIteratedUsingPreincrementation) {
-  auto it = s.front();
-  ASSERT_EQ(s.front().next(), ++it);
-  ASSERT_EQ(s.front().next(), it);
+  auto it = s.begin();
+  ASSERT_EQ(s.begin().next(), ++it);
+  ASSERT_EQ(s.begin().next(), it);
 }
 
 TEST_F(InStepsWithTwoElements, setpsMayBeIteratedUsingPostincrementation) {
-  auto it = s.front();
-  ASSERT_EQ(s.front(), it++);
-  ASSERT_EQ(s.front().next(), it);
+  auto it = s.begin();
+  ASSERT_EQ(s.begin(), it++);
+  ASSERT_EQ(s.begin().next(), it);
 }
 
 TEST_F(InStepsWithTwoElements, nextToSecondIsEnd) {
-  ASSERT_EQ(s.front().next().next(), s.end());
+  ASSERT_EQ(s.begin().next().next(), s.end());
 }

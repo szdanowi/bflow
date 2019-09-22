@@ -29,6 +29,8 @@ public:
     return result;
   }
 
+  element_t& operator*() { return *_current; }
+
   bool operator==(const self_t& other) const { return _current == other._current; }
   bool operator!=(const self_t& other) const { return _current != other._current; }
 

@@ -23,7 +23,7 @@ public:
   template <typename step_t>
   void push_front(step_t&& step);
 
-  iterator front() const;
+  iterator begin() const;
   iterator end() const;
 
 private:
@@ -42,7 +42,7 @@ auto steps<event_t>::end() const -> iterator {
 }
 
 template <typename event_t>
-auto steps<event_t>::front() const -> iterator {
+auto steps<event_t>::begin() const -> iterator {
   return _front != nullptr ? iterator(*_front) : end();
 }
 

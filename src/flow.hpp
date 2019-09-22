@@ -30,11 +30,15 @@ private:
   explicit _flow(steps&&);
 
   steps _steps;
-  current_step _current = _steps.front();
+  current_step _current = _steps.begin();
 };
+
+template <typename event_t, typename selection_t>
+class steps_selection;
 
 struct one_shot_iteration;
 struct looped_iteration;
+struct any_consumes;
 } // namespace detail
 
 template <typename event_t>
@@ -42,6 +46,9 @@ using one_shot = detail::_flow<event_t, detail::one_shot_iteration>;
 
 template <typename event_t>
 using looped = detail::_flow<event_t, detail::looped_iteration>;
+
+template <typename event_t>
+using any = detail::steps_selection<event_t, detail::any_consumes>;
 
 std::ostream& operator<<(std::ostream& os, result value);
 

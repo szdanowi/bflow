@@ -30,6 +30,7 @@ ColumnLimit: 120
 CommentPragmas: '\$.*\$'
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 Cpp11BracedListStyle: true
+FixNamespaceComments: true
 IndentCaseLabels: true
 IndentWidth: 2
 IndentWrappedFunctionNames: false

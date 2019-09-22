@@ -38,42 +38,59 @@ private:
 template <typename event_t>
 linked_step<event_t> linked_step<event_t>::universal_end = {};
 
-template <typename event_t>
-class functional_step : public linked_step<event_t>
-{
-public:
-  functional_step(std::function<result(event_t)> functor, typename linked_step<event_t>::ptr&& next)
-      : linked_step<event_t>(std::move(next)), _functor(functor) {}
-
-  result process(event_t e) override { return _functor(e); }
-  explicit operator bool() const override { return true; }
-
-private:
-  std::function<result(event_t)> _functor;
-};
-
-template <typename event_t, typename iteration_t>
+template <typename event_t, typename subflow_t>
 class subflow_step : public linked_step<event_t>
 {
 public:
-  subflow_step(_flow<event_t, iteration_t>&& subflow, typename linked_step<event_t>::ptr&& next)
+  subflow_step(subflow_t&& subflow, typename linked_step<event_t>::ptr&& next)
       : linked_step<event_t>(std::move(next)), _subflow(std::move(subflow)) {}
 
-  result process(event_t e) override { return _subflow.process(e); }
+  result process(event_t e) override { return _process<subflow_t>(e); }
+
   explicit operator bool() const override { return true; }
 
 private:
-  _flow<event_t, iteration_t> _subflow;
+  template <typename object_t>
+  inline auto _process(event_t e) -> decltype(std::declval<object_t>().process(std::declval<event_t>()), result()) {
+    return _subflow.process(e);
+  }
+
+  template <typename object_t>
+  inline auto _process(event_t e) -> decltype(std::declval<object_t>()(std::declval<event_t>()), result()) {
+    return _subflow(e);
+  }
+
+  subflow_t _subflow;
 };
 
-template <typename event_t>
-auto create_step(std::function<result(event_t)> step, typename linked_step<event_t>::ptr&& next) {
-  return std::make_unique<functional_step<event_t>>(step, std::move(next));
-}
+template <typename event_t, typename selection_t>
+class steps_selection : public linked_step<event_t>
+{
+public:
+  template <typename... steps_t>
+  static steps_selection<event_t, selection_t> of(steps_t&&... steps);
 
-template <typename event_t, typename iteration_t>
-auto create_step(_flow<event_t, iteration_t>&& subflow, typename linked_step<event_t>::ptr&& next) {
-  return std::make_unique<subflow_step<event_t, iteration_t>>(std::move(subflow), std::move(next));
+  result process(event_t e) override {
+    auto outcome = bflow::result::rejected;
+    for (auto& step : _steps) {
+      auto result = step.process(e);
+      if (result == bflow::result::completed) return result;
+      if (result == bflow::result::accepted) outcome = result;
+    }
+    return outcome;
+  }
+
+private:
+  using steps = detail::steps<event_t>;
+
+  explicit steps_selection(steps&&);
+
+  steps _steps;
+};
+
+template <typename event_t, typename subflow_t>
+auto create_step(subflow_t&& subflow, typename linked_step<event_t>::ptr&& next) {
+  return std::make_unique<subflow_step<event_t, subflow_t>>(std::move(subflow), std::move(next));
 }
 
 } // namespace bflow::detail

@@ -27,7 +27,7 @@ struct looped_iteration
     if (result != result::completed) return result;
     if (++current) return result::accepted;
 
-    current = steps.front();
+    current = steps.begin();
     return result::completed;
   }
 };
@@ -52,5 +52,14 @@ _flow<event_t, iteration_t> _flow<event_t, iteration_t>::of(steps_t&&... steps) 
 
 template <typename event_t, typename iteration_t>
 _flow<event_t, iteration_t>::_flow(detail::steps<event_t>&& steps) : _steps(std::move(steps)) {}
+
+template <typename event_t, typename selection_t>
+template <typename... steps_t>
+steps_selection<event_t, selection_t> steps_selection<event_t, selection_t>::of(steps_t&&... steps) {
+  return steps_selection<event_t, selection_t>(detail::make_steps<event_t>(std::forward<steps_t>(steps)...));
+}
+
+template <typename event_t, typename selection_t>
+steps_selection<event_t, selection_t>::steps_selection(detail::steps<event_t>&& steps) : _steps(std::move(steps)) {}
 
 } // namespace bflow::detail
