@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <iosfwd>
 #include <memory>
 
@@ -16,12 +17,16 @@ template <typename event_t, typename iteration_t>
 class _flow
 {
 public:
+  using listener = std::function<void()>;
+
   _flow() = default;
 
   template <typename... steps_t>
   static _flow<event_t, iteration_t> of(steps_t&&... steps);
 
   result process(event_t event);
+
+  inline void on_completion(listener completion_listener) { _completion_listener = completion_listener; }
 
 private:
   using steps = detail::steps<event_t>;
@@ -31,6 +36,7 @@ private:
 
   steps _steps;
   current_step _current = _steps.begin();
+  listener _completion_listener = [] {};
 };
 
 template <typename event_t, typename selection_t>

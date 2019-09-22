@@ -8,7 +8,9 @@ namespace bflow::detail
 template <typename event_t, typename iteration_t>
 result _flow<event_t, iteration_t>::process(event_t event) {
   if (not _current) return result::rejected;
-  return iteration_t::advance(_current, _current.process(event), _steps);
+  auto result = iteration_t::advance(_current, _current.process(event), _steps);
+  if (result == result::completed) _completion_listener();
+  return result;
 }
 
 struct one_shot_iteration

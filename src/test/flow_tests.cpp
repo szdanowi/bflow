@@ -109,3 +109,23 @@ TEST_F(ALoopedFlow, supportsSubflowAlternatives) {
   ASSERT_EQ(bflow::result::completed, flow.process(9));
 }
 
+TEST_F(AOneShotFlow, notifiesRegisteredListenerOnCompletion) {
+  int notified = 0;
+
+  auto flow = bflow::one_shot<int>::of(seven, nine);
+  flow.on_completion([&notified](){ notified++; });
+  ASSERT_EQ(0, notified) << "Notified listener too soon";
+
+  flow.process(9);
+  ASSERT_EQ(0, notified) << "Notified listener too soon";
+
+  flow.process(7);
+  ASSERT_EQ(0, notified) << "Notified listener too soon";
+
+  flow.process(9);
+  ASSERT_EQ(1, notified) << "Failed to notify the listener once";
+
+  flow.process(7);
+  flow.process(9);
+  ASSERT_EQ(1, notified) << "Notified listener too many times";
+}
