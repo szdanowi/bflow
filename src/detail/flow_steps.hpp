@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flow_linked_step.hpp"
+#include "subflow_step.hpp"
 #include "flow_step_iterator.hpp"
 #include <list>
 #include <memory>
@@ -44,6 +45,18 @@ auto steps<event_t>::end() const -> iterator {
 template <typename event_t>
 auto steps<event_t>::begin() const -> iterator {
   return _front != nullptr ? iterator(*_front) : end();
+}
+
+template <typename event_t>
+auto make_steps() {
+  return detail::steps<event_t>();
+}
+
+template <typename event_t, typename step_t, typename... steps_t>
+auto make_steps(step_t&& step, steps_t&&... steps) {
+  auto flow = make_steps<event_t>(std::forward<steps_t>(steps)...);
+  flow.push_front(std::forward<step_t>(step));
+  return flow;
 }
 
 } // namespace bflow::detail

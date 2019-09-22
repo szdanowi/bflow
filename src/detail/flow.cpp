@@ -1,4 +1,4 @@
-#include "../flow.hpp"
+#include "flow.hpp"
 #include <ostream>
 
 namespace bflow
