@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../flow.hpp"
+#include "flow.hpp"
 
 using namespace bflow;
 using namespace bflow::detail;
