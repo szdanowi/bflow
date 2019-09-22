@@ -1,7 +1,7 @@
 #pragma once
 
-#include "flow_steps.hpp"
-#include "flow_result.hpp"
+#include "steps.hpp"
+#include "result.hpp"
 #include <functional>
 #include <utility>
 

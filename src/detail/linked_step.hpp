@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flow_result.hpp"
+#include "result.hpp"
 #include <memory>
 #include <stdexcept>
 #include <utility>

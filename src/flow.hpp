@@ -1,10 +1,10 @@
 #pragma once
 
-#include "detail/flow_templates_impl.hpp"
+#include "detail/flow.hpp"
 #include "detail/steps_selection.hpp"
 #include "detail/iteration/looped.hpp"
 #include "detail/iteration/one_shot.hpp"
-#include "flow_result.hpp"
+#include "result.hpp"
 #include <iosfwd>
 
 namespace bflow

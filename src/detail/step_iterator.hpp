@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flow_linked_step.hpp"
+#include "linked_step.hpp"
 
 namespace bflow::detail
 {

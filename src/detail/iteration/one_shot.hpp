@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flow_result.hpp"
+#include "result.hpp"
 
 namespace bflow::detail::iteration
 {
