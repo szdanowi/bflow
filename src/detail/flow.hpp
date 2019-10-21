@@ -23,12 +23,11 @@ public:
   inline void on_completion(listener completion_listener) { _completion_listener = completion_listener; }
 
 private:
-  using steps = steps<event_t>;
-  using current_step = typename steps::iterator;
+  using current_step = typename steps<event_t>::iterator;
 
-  explicit flow(steps&&);
+  explicit flow(steps<event_t>&&);
 
-  steps _steps;
+  steps<event_t> _steps;
   current_step _current = _steps.begin();
   listener _completion_listener = [] {};
 };
@@ -48,6 +47,6 @@ flow<event_t, iteration_t> flow<event_t, iteration_t>::of(steps_t&&... steps) {
 }
 
 template <typename event_t, typename iteration_t>
-flow<event_t, iteration_t>::flow(steps&& steps) : _steps(std::move(steps)) {}
+flow<event_t, iteration_t>::flow(steps<event_t>&& steps) : _steps(std::move(steps)) {}
 
 } // namespace bflow::detail

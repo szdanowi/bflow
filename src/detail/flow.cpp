@@ -10,6 +10,7 @@ const char* to_str(result value) {
     case result::rejected: return "rejected";
     case result::accepted: return "accepted";
     case result::completed: return "completed";
+    default: return "[INVALID RESULT]";
   }
 }
 } // namespace
