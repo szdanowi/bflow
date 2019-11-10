@@ -15,13 +15,20 @@ struct invalid_step : public std::runtime_error
 template <typename event_t>
 class linked_step
 {
-public:
   using self_t = linked_step<event_t>;
-  using ptr = std::unique_ptr<self_t>;
+
+public:
   static self_t universal_end;
 
   linked_step() = default;
-  explicit linked_step(ptr&& next) : _next(std::move(next)) {}
+  linked_step(self_t&&) = default;
+  linked_step(const self_t&) = delete;
+
+  self_t& operator=(self_t&&) = default;
+  self_t& operator=(const self_t&) = delete;
+
+  explicit linked_step(std::unique_ptr<self_t>&& next) : _next(std::move(next)) {}
+  virtual ~linked_step() = default;
 
   virtual result process(event_t) { throw invalid_step(); }
   self_t& next() { return _next ? *_next : universal_end; }

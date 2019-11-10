@@ -38,4 +38,5 @@ add_executable(unit_tests "")
 add_subdirectory(src)
 
 target_link_libraries(unit_tests gtest_main)
+target_compile_options(unit_tests PRIVATE -Werror -Wall -Wextra -pedantic-errors -Wconversion -Wsign-conversion)
 add_test(run_unit_tests unit_tests)

@@ -9,7 +9,7 @@ template <typename event_t, typename subflow_t>
 class subflow_step : public linked_step<event_t>
 {
 public:
-  subflow_step(subflow_t&& subflow, typename linked_step<event_t>::ptr&& next)
+  subflow_step(subflow_t&& subflow, std::unique_ptr<linked_step<event_t>>&& next)
       : linked_step<event_t>(std::move(next)), _subflow(std::move(subflow)) {}
 
   result process(event_t e) override { return _process<subflow_t>(e); }
@@ -31,7 +31,7 @@ private:
 };
 
 template <typename event_t, typename subflow_t>
-auto create_step(subflow_t&& subflow, typename linked_step<event_t>::ptr&& next) {
+auto create_step(subflow_t&& subflow, std::unique_ptr<linked_step<event_t>>&& next) {
   return std::make_unique<subflow_step<event_t, subflow_t>>(std::move(subflow), std::move(next));
 }
 } // namespace bflow::detail

@@ -10,43 +10,40 @@ namespace bflow::detail
 template <typename event_t, typename iteration_t>
 class flow
 {
+  using self_t = flow<event_t, iteration_t>;
+
 public:
   using listener = std::function<void()>;
 
   flow() = default;
+  flow(self_t&&) = default;
+  flow(const self_t&) = delete;
+
+  self_t& operator=(self_t&&) = default;
+  self_t& operator=(const self_t&) = delete;
 
   template <typename... steps_t>
-  static flow<event_t, iteration_t> of(steps_t&&... steps);
+  static self_t of(steps_t&&... steps) {
+    return self_t(make_steps<event_t>(std::forward<steps_t>(steps)...));
+  }
 
-  result process(event_t event);
+  result process(event_t event) {
+    if (not _current) return result::rejected;
+    auto result = iteration_t::advance(_current, _current.process(event), _steps);
+    if (result == result::completed) _completion_listener();
+    return result;
+  }
 
   inline void on_completion(listener completion_listener) { _completion_listener = completion_listener; }
 
 private:
   using current_step = typename steps<event_t>::iterator;
 
-  explicit flow(steps<event_t>&&);
+  explicit flow(steps<event_t>&& steps) : _steps(std::move(steps)) {}
 
   steps<event_t> _steps;
   current_step _current = _steps.begin();
   listener _completion_listener = [] {};
 };
-
-template <typename event_t, typename iteration_t>
-result flow<event_t, iteration_t>::process(event_t event) {
-  if (not _current) return result::rejected;
-  auto result = iteration_t::advance(_current, _current.process(event), _steps);
-  if (result == result::completed) _completion_listener();
-  return result;
-}
-
-template <typename event_t, typename iteration_t>
-template <typename... steps_t>
-flow<event_t, iteration_t> flow<event_t, iteration_t>::of(steps_t&&... steps) {
-  return flow<event_t, iteration_t>(make_steps<event_t>(std::forward<steps_t>(steps)...));
-}
-
-template <typename event_t, typename iteration_t>
-flow<event_t, iteration_t>::flow(steps<event_t>&& steps) : _steps(std::move(steps)) {}
 
 } // namespace bflow::detail
